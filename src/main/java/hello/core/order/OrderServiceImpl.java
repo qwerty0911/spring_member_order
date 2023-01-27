@@ -1,22 +1,23 @@
 package hello.core.order;
 
+import hello.core.annotation.MainSidcountPolicy;
 import hello.core.discount.DiscountPolicy;
-import hello.core.discount.FixDiscountPolicy;
 import hello.core.discount.RateDiscountPolicy;
 import hello.core.member.Member;
 import hello.core.member.MemberRepository;
 import hello.core.member.MemoryMemberRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
+//@RequiredArgsConstructor //final이 붙은 필드를 모아서 생성자를 자동으로 만들어줌
 public class OrderServiceImpl implements OrderService{
 
-//  DIP 위반, 인터페이스에도 의존하고 구현체에도 의존함
-//  private final DiscountPolicy discountPolicy = new FixDiscountPolicy();
-//
-//  인터페이스에만 의존함
     private final DiscountPolicy discountPolicy;
     private final MemberRepository memberRepository;
 
-    public OrderServiceImpl(DiscountPolicy discountPolicy, MemberRepository memberRepository) {
+    public OrderServiceImpl(DiscountPolicy discountPolicy,@MainSidcountPolicy MemberRepository memberRepository) {
         this.discountPolicy = discountPolicy;
         this.memberRepository = memberRepository;
     }
@@ -27,5 +28,10 @@ public class OrderServiceImpl implements OrderService{
         int discountPrice = discountPolicy.discount(member, itemPrice);
 
         return new Order(memberId, itemName, itemPrice, discountPrice);
+    }
+
+    //test 용도
+    public MemberRepository getMemberRepository() {
+        return memberRepository;
     }
 }
